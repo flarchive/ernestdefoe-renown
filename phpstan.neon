@@ -1,0 +1,23 @@
+includes:
+    - vendor/flarum/phpstan/extension.neon
+
+parameters:
+    # One process: flarum/phpstan's bootstrap installs a test forum the first
+    # time it runs, and parallel workers each start that install at once on a
+    # fresh checkout (CI), failing with Install\StepFailed.
+    parallel:
+        maximumNumberOfProcesses: 1
+    level: 6
+    paths:
+        - extend.php
+        - src
+    databaseMigrationsPath: [migrations]
+    # Optional extensions Renown works with only while they're enabled (Extend\Conditional, isEnabled + class_exists).
+    excludePaths:
+        - src/Badges/Metric.php
+        - src/Integration/Buzz.php
+        - src/Integration/Kudos.php
+    ignoreErrors:
+        - '#(ErnestDefoe\\Answers|Ernestdefoe\\Buzz|ErnestDefoe\\Kudos|ErnestDefoe\\Testimonials|ErnestDefoe\\Corkboard|ErnestDefoe\\Panels|Flarum\\Approval|FoF\\BestAnswer|FoF\\Badges)\\#'
+        # flarum/tags adds the relation; only called after isEnabled('flarum-tags').
+        - '#Call to an undefined method Flarum\\Discussion\\Discussion::tags\(\)#'
